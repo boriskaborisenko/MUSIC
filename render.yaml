@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: private-ytmusic-server
+    runtime: node
+    rootDir: SERVER
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: YTMUSIC_GL
+        value: US
+      - key: YTMUSIC_HL
+        value: en
+      - key: STREAM_RESOLVER_ENABLED
+        value: "true"
+      - key: STREAM_PROXY_ENABLED
+        value: "false"
+      - key: YTMUSIC_COOKIES
+        sync: false

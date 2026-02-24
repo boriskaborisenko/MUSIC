@@ -1,0 +1,5 @@
+.DS_Store
+SERVER/node_modules
+SERVER/dist
+SERVER/.env
+SERVER/*-player-script.js
