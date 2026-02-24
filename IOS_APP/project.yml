@@ -1,0 +1,44 @@
+name: MusicIOS
+options:
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "17.0"
+configs:
+  Debug: debug
+  Release: release
+targets:
+  MusicIOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.boriskaborisenko.MusicIOS
+        PRODUCT_NAME: MusicIOS
+        SWIFT_VERSION: "5.9"
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1,2"
+        DEVELOPMENT_ASSET_PATHS: ""
+    info:
+      path: Sources/Support/Info.plist
+      properties:
+        CFBundleDisplayName: MusicIOS
+        UILaunchScreen: {}
+        UIBackgroundModes:
+          - audio
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    scheme:
+      gatherCoverageData: false
+

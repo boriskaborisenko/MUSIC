@@ -18,6 +18,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   CORS_ORIGIN: z.string().default("*"),
   YTMUSIC_COOKIES: z.string().optional(),
+  YTDL_COOKIES_JSON: z.string().optional(),
   YTMUSIC_GL: z.string().default("US"),
   YTMUSIC_HL: z.string().default("en"),
   STREAM_RESOLVER_ENABLED: boolish.default(true),
@@ -39,5 +40,6 @@ export const config = {
   playback: {
     resolverEnabled: env.STREAM_RESOLVER_ENABLED,
     proxyEnabled: env.STREAM_PROXY_ENABLED,
+    ytdlCookiesJson: env.YTDL_COOKIES_JSON?.trim() || undefined,
   },
 } as const;

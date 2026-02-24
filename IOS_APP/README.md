@@ -1,10 +1,30 @@
-# IOS_APP (planned)
+# IOS_APP
 
-This folder is reserved for the native iOS client (`SwiftUI + AVPlayer`).
+Native iOS client prototype (`SwiftUI + AVPlayer`) wired to the deployed backend:
 
-Planned next steps after backend MVP is verified:
+- Server URL: `https://music-brre.onrender.com`
+- Search songs (`/api/search?type=songs`)
+- Resolve playback (`/api/playback/:videoId/resolve`)
+- Native playback engine (`AVPlayer`)
+- Background audio mode + lock screen remote controls hooks
 
-1. Xcode project scaffold (`SwiftUI`, iOS 17+ target)
-2. API client for this server (`/api/search`, `/api/albums`, `/api/playback/.../resolve`)
-3. Playback engine (`AVPlayer`, background audio, lock screen controls)
-4. Apple Music-like UI shell (tabs, search, library, now playing mini-player)
+## Generate Project
+
+```bash
+cd IOS_APP
+xcodegen generate
+open MusicIOS.xcodeproj
+```
+
+## Run
+
+1. Select an iPhone simulator or device in Xcode
+2. Build & Run
+3. Open `Search`
+4. Search for a song and tap it to play
+
+## Notes
+
+- The app currently prefers `proxyUrl` if present, otherwise uses `directUrl`.
+- Your backend currently returns `proxyUrl: null` (`STREAM_PROXY_ENABLED=false`), so playback uses direct stream URLs.
+- If playback fails on a real iPhone due to IP-bound URLs, enable proxy playback on the server and redeploy.

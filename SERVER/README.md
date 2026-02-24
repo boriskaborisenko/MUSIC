@@ -49,3 +49,11 @@ curl "http://localhost:3000/api/playback/dQw4w9WgXcQ/resolve"
 - Prefer `.../resolve` right before playback and feed `directUrl` to `AVPlayer`.
 - `directUrl` can expire; request a fresh one when starting/retrying playback.
 - Use `/stream` only as fallback (proxying costs server bandwidth and can increase latency).
+
+## Render / YouTube Anti-Bot Notes
+
+If playback resolve fails with a message like `Sign in to confirm you're not a bot`:
+
+- Set `YTDL_COOKIES_JSON` in Render to a one-line JSON array exported from EditThisCookie (YouTube cookies)
+- Optionally also set `YTMUSIC_COOKIES` (raw `Cookie:` header string) for `ytmusic-api`
+- Redeploy and retry `/api/playback/:videoId/resolve`
