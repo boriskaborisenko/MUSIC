@@ -140,7 +140,8 @@ final class PlayerEngine: ObservableObject {
       currentResolution = resolution
 
       let streamURLString = resolution.proxyUrl ?? resolution.directUrl
-      guard let streamURL = apiClient.buildAbsoluteURL(from: streamURLString) else {
+      let streamBaseURL = resolution.proxyUrl != nil ? apiClient.playbackBaseURL : nil
+      guard let streamURL = apiClient.buildAbsoluteURL(from: streamURLString, relativeTo: streamBaseURL) else {
         throw APIClientError.invalidURL
       }
 

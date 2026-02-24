@@ -177,7 +177,7 @@ router.get(
   "/playback/:videoId/stream",
   asyncHandler(async (req, res) => {
     const videoId = requireParam("videoId", req.params.videoId);
-    await streamResolver.proxy(videoId, res);
+    await streamResolver.proxy(videoId, req, res);
   }),
 );
 

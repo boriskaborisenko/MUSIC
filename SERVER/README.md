@@ -57,3 +57,39 @@ If playback resolve fails with a message like `Sign in to confirm you're not a b
 - Set `YTDL_COOKIES_JSON` in Render to a one-line JSON array exported from EditThisCookie (YouTube cookies)
 - Optionally also set `YTMUSIC_COOKIES` (raw `Cookie:` header string) for `ytmusic-api`
 - Redeploy and retry `/api/playback/:videoId/resolve`
+
+## Docker (with `yt-dlp`) for Render
+
+The repo includes `SERVER/Dockerfile` that bundles:
+
+- Node.js 20
+- your compiled server (`dist/`)
+- `yt-dlp` (used as a fallback when `@distube/ytdl-core` fails on YouTube changes)
+
+### Build locally (optional)
+
+```bash
+cd SERVER
+docker build -t private-ytmusic-server .
+docker run --rm -p 3000:3000 --env-file .env private-ytmusic-server
+```
+
+### Render Docker Service (Dashboard)
+
+Create a new **Web Service** in Render and choose the repo, then set:
+
+- `Root Directory`: `SERVER`
+- `Runtime`: `Docker`
+- `Dockerfile Path`: `./Dockerfile` (or leave default if Render detects it)
+
+Recommended env vars:
+
+- `CORS_ORIGIN=*`
+- `YTMUSIC_GL=US`
+- `YTMUSIC_HL=en`
+- `STREAM_RESOLVER_ENABLED=true`
+- `STREAM_PROXY_ENABLED=true`
+- `YTDL_COOKIES_JSON=...` (secret)
+- `YTMUSIC_COOKIES=...` (optional secret)
+
+Important: Docker on Render solves bundling `yt-dlp`, but **does not guarantee playback**. YouTube may still return `403` for Render's datacenter IP. In practice, Render is great for metadata, while playback is often more reliable from a home/residential server.

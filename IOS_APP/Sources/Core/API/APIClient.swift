@@ -21,20 +21,26 @@ enum APIClientError: LocalizedError {
 }
 
 final class APIClient {
-  static let shared = APIClient(baseURL: AppConfiguration.serverBaseURL)
+  static let shared = APIClient(
+    metadataBaseURL: AppConfiguration.metadataBaseURL,
+    playbackBaseURL: AppConfiguration.playbackBaseURL
+  )
 
-  let baseURL: URL
+  let metadataBaseURL: URL
+  let playbackBaseURL: URL
   private let session: URLSession
   private let decoder: JSONDecoder
 
-  init(baseURL: URL, session: URLSession = .shared) {
-    self.baseURL = baseURL
+  init(metadataBaseURL: URL, playbackBaseURL: URL, session: URLSession = .shared) {
+    self.metadataBaseURL = metadataBaseURL
+    self.playbackBaseURL = playbackBaseURL
     self.session = session
     self.decoder = JSONDecoder()
   }
 
   func searchSongs(query: String) async throws -> [SongSearchItem] {
     try await request(
+      baseURL: metadataBaseURL,
       path: "/api/search",
       queryItems: [
         URLQueryItem(name: "q", value: query),
@@ -44,17 +50,19 @@ final class APIClient {
   }
 
   func resolvePlayback(videoID: String) async throws -> PlaybackResolution {
-    try await request(path: "/api/playback/\(videoID)/resolve")
+    try await request(baseURL: playbackBaseURL, path: "/api/playback/\(videoID)/resolve")
   }
 
-  func buildAbsoluteURL(from rawValue: String) -> URL? {
+  func buildAbsoluteURL(from rawValue: String, relativeTo baseURL: URL? = nil) -> URL? {
     if let absolute = URL(string: rawValue), absolute.scheme != nil {
       return absolute
     }
-    return URL(string: rawValue, relativeTo: baseURL)?.absoluteURL
+    let targetBase = baseURL ?? metadataBaseURL
+    return URL(string: rawValue, relativeTo: targetBase)?.absoluteURL
   }
 
   private func request<T: Decodable>(
+    baseURL: URL,
     path: String,
     queryItems: [URLQueryItem] = []
   ) async throws -> T {
@@ -97,4 +105,3 @@ final class APIClient {
     throw APIClientError.serverError(envelope.error?.message ?? "Server returned an error.")
   }
 }
-
