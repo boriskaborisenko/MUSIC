@@ -7,6 +7,9 @@ struct NowPlayingView: View {
   @State private var isDraggingSlider = false
   @State private var sliderValue: Double = 0
   @State private var playlistPickerSong: SongSearchItem?
+  @State private var artistDestination: ArtistPageDestination?
+  @State private var isResolvingArtistDestination = false
+  @State private var artistOpenErrorMessage: String?
 
   var body: some View {
     NavigationStack {
@@ -31,10 +34,7 @@ struct NowPlayingView: View {
                 Text(track.name)
                   .font(.title2.weight(.semibold))
                   .lineLimit(2)
-                Text(player.currentResolution?.author ?? track.artistName)
-                  .font(.title3)
-                  .foregroundStyle(.secondary)
-                  .lineLimit(1)
+                artistLine(for: track)
               }
               .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -170,20 +170,10 @@ struct NowPlayingView: View {
             Button {
               player.toggleRepeatOne()
             } label: {
-              ZStack {
-                Circle()
-                  .fill(Color(.secondarySystemBackground))
-                  .frame(width: 34, height: 34)
-                Circle()
-                  .strokeBorder(
-                    player.isRepeatOneEnabled ? Color.primary.opacity(0.22) : Color.clear,
-                    lineWidth: 1
-                  )
-                  .frame(width: 34, height: 34)
-                Image(systemName: "repeat.1")
-                  .font(.body.weight(.semibold))
-                  .foregroundStyle(player.isRepeatOneEnabled ? .primary : .secondary)
-              }
+              Image(systemName: "repeat.1")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(player.isRepeatOneEnabled ? .red : .secondary)
+                .frame(width: 28, height: 28)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(player.isRepeatOneEnabled ? "Repeat one on" : "Repeat one off")
@@ -246,6 +236,20 @@ struct NowPlayingView: View {
         PlaylistPickerSheet(song: song)
           .environmentObject(library)
       }
+      .navigationDestination(item: $artistDestination) { destination in
+        DriveMusicSongsPageView(title: destination.title, path: destination.path)
+      }
+      .alert(
+        "Couldn’t Open Artist",
+        isPresented: Binding(
+          get: { artistOpenErrorMessage != nil },
+          set: { if !$0 { artistOpenErrorMessage = nil } }
+        )
+      ) {
+        Button("OK", role: .cancel) {}
+      } message: {
+        Text(artistOpenErrorMessage ?? "Try again.")
+      }
       .onAppear {
         sliderValue = player.currentTime
       }
@@ -267,13 +271,53 @@ struct NowPlayingView: View {
   }
 
   @ViewBuilder
+  private func artistLine(for track: SongSearchItem) -> some View {
+    let displayName = (player.currentResolution?.author?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false)
+      ? (player.currentResolution?.author ?? track.artistName)
+      : track.artistName
+
+    if player.isRadioPlayback {
+      Text(displayName)
+        .font(.title3)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+    } else {
+      Button {
+        Task {
+          await openArtistPage(for: track, displayedArtistName: displayName)
+        }
+      } label: {
+        HStack(spacing: 6) {
+          Text(displayName)
+            .font(.title3)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+
+          if isResolvingArtistDestination {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption.weight(.semibold))
+              .foregroundStyle(.tertiary)
+          }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .disabled(isResolvingArtistDestination)
+    }
+  }
+
+  @ViewBuilder
   private func artwork(for track: SongSearchItem) -> some View {
     if let image = player.currentArtwork {
       Image(uiImage: image)
         .resizable()
         .scaledToFill()
     } else if let url = track.primaryArtworkURL {
-      AsyncImage(url: url) { phase in
+      CachedRemoteImage(url: url) { phase in
         switch phase {
         case let .success(image):
           image.resizable().scaledToFill()
@@ -323,6 +367,38 @@ struct NowPlayingView: View {
     }
     .buttonStyle(.plain)
   }
+
+  private func openArtistPage(for track: SongSearchItem, displayedArtistName: String) async {
+    guard !player.isRadioPlayback else { return }
+    guard !isResolvingArtistDestination else { return }
+
+    let fallbackName = displayedArtistName.trimmingCharacters(in: .whitespacesAndNewlines)
+    let lookupName = track.artistName.trimmingCharacters(in: .whitespacesAndNewlines)
+    let artistName = lookupName.isEmpty ? fallbackName : lookupName
+    guard !artistName.isEmpty else { return }
+
+    isResolvingArtistDestination = true
+    defer { isResolvingArtistDestination = false }
+
+    do {
+      let path = try await APIClient.shared.resolveDriveMusicArtistPagePath(
+        artistName: artistName,
+        preferredPath: track.artist?.artistId
+      )
+      if Task.isCancelled { return }
+      artistDestination = ArtistPageDestination(title: artistName, path: path)
+    } catch {
+      if Task.isCancelled { return }
+      artistOpenErrorMessage = error.localizedDescription
+    }
+  }
+}
+
+private struct ArtistPageDestination: Identifiable, Hashable {
+  let title: String
+  let path: String
+
+  var id: String { path }
 }
 
 private struct CircleButton: View {

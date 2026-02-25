@@ -101,7 +101,7 @@ struct MiniPlayerBar: View {
         .frame(width: 44, height: 44)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     } else if let url = track.primaryArtworkURL {
-      AsyncImage(url: url) { phase in
+      CachedRemoteImage(url: url) { phase in
         switch phase {
         case let .success(image):
           image.resizable().scaledToFill()

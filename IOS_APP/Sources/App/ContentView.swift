@@ -8,9 +8,12 @@ struct ContentView: View {
   @State private var isNowPlayingPresented = false
   @State private var isKeyboardVisible = false
   @State private var showStartupSplash = true
-  @State private var startupSplashSpinning = false
   @State private var didStartStartupSplash = false
   private let miniPlayerTabBarOffset: CGFloat = 60
+
+  private var miniPlayerContentInset: CGFloat {
+    player.isRadioPlayback ? 82 : 96
+  }
 
   private var shouldShowMiniPlayer: Bool {
     guard player.currentTrack != nil else { return false }
@@ -52,6 +55,11 @@ struct ContentView: View {
         }
         .tag(Tab.radio)
     }
+    .safeAreaInset(edge: .bottom) {
+      Color.clear
+        .frame(height: shouldShowMiniPlayer ? miniPlayerContentInset : 0)
+        .allowsHitTesting(false)
+    }
     .overlay(alignment: .bottom) {
       if shouldShowMiniPlayer {
         MiniPlayerBar(
@@ -65,7 +73,7 @@ struct ContentView: View {
     }
     .overlay {
       if showStartupSplash {
-        StartupSplashOverlay(isSpinning: startupSplashSpinning)
+        StartupSplashOverlay()
           .transition(.opacity)
           .zIndex(20)
       }
@@ -93,7 +101,6 @@ struct ContentView: View {
   private func startStartupSplashIfNeeded() {
     guard !didStartStartupSplash else { return }
     didStartStartupSplash = true
-    startupSplashSpinning = true
 
     Task {
       try? await Task.sleep(for: .milliseconds(900))
@@ -116,8 +123,6 @@ private enum Tab {
 }
 
 private struct StartupSplashOverlay: View {
-  let isSpinning: Bool
-
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   var body: some View {
@@ -125,17 +130,18 @@ private struct StartupSplashOverlay: View {
       Color("LaunchBackground")
         .ignoresSafeArea()
 
-      Image("LaunchLogo")
-        .resizable()
-        .scaledToFit()
-        .frame(width: 84, height: 84)
-        .rotationEffect(.degrees(reduceMotion ? 0 : (isSpinning ? 360 : 0)))
-        .animation(
-          reduceMotion
-            ? nil
-            : .linear(duration: 1.0).repeatForever(autoreverses: false),
-          value: isSpinning
-        )
+      VStack(spacing: 12) {
+        ProgressView()
+          .controlSize(.large)
+          .scaleEffect(1.15)
+          .tint(.primary)
+
+        if !reduceMotion {
+          Text("Loading")
+            .font(.footnote.weight(.medium))
+            .foregroundStyle(.secondary)
+        }
+      }
     }
     .allowsHitTesting(true)
     .accessibilityHidden(true)
@@ -325,8 +331,9 @@ private struct HomeView: View {
               HomeBrowseCard(
                 title: item.title,
                 subtitle: nil,
-                imageURL: item.imageURL,
-                size: CGSize(width: 126, height: 126)
+                imageURL: nil,
+                size: CGSize(width: 126, height: 126),
+                backgroundStyle: .gradient(seed: item.title)
               )
             }
             .buttonStyle(.plain)
@@ -848,7 +855,7 @@ private struct HomeSongTile: View {
   @ViewBuilder
   private var artwork: some View {
     if let url = song.primaryArtworkURL {
-      AsyncImage(url: url) { phase in
+      CachedRemoteImage(url: url) { phase in
         switch phase {
         case let .success(image):
           image.resizable().scaledToFill()
@@ -1032,10 +1039,30 @@ private struct HomeRadioCard: View {
 }
 
 private struct HomeBrowseCard: View {
+  enum BackgroundStyle: Hashable {
+    case image
+    case gradient(seed: String)
+  }
+
   let title: String
   let subtitle: String?
   let imageURL: URL?
   let size: CGSize
+  let backgroundStyle: BackgroundStyle
+
+  init(
+    title: String,
+    subtitle: String?,
+    imageURL: URL?,
+    size: CGSize,
+    backgroundStyle: BackgroundStyle = .image
+  ) {
+    self.title = title
+    self.subtitle = subtitle
+    self.imageURL = imageURL
+    self.size = size
+    self.backgroundStyle = backgroundStyle
+  }
 
   var body: some View {
     ZStack(alignment: .bottomLeading) {
@@ -1073,8 +1100,10 @@ private struct HomeBrowseCard: View {
 
   @ViewBuilder
   private var artwork: some View {
-    if let imageURL {
-      AsyncImage(url: imageURL) { phase in
+    if case let .gradient(seed) = backgroundStyle {
+      gradientArtwork(seed: seed)
+    } else if let imageURL {
+      CachedRemoteImage(url: imageURL) { phase in
         switch phase {
         case let .success(image):
           image.resizable().scaledToFill()
@@ -1095,6 +1124,47 @@ private struct HomeBrowseCard: View {
     }
   }
 
+  private func gradientArtwork(seed: String) -> some View {
+    let palette = genreGradientPalette(for: seed)
+    let useDiagonal = (abs(seed.hashValue) % 2) == 0
+
+    return RoundedRectangle(cornerRadius: 16, style: .continuous)
+      .fill(
+        LinearGradient(
+          colors: palette,
+          startPoint: useDiagonal ? .topLeading : .leading,
+          endPoint: useDiagonal ? .bottomTrailing : .trailing
+        )
+      )
+      .overlay {
+        RadialGradient(
+          colors: [.white.opacity(0.22), .clear],
+          center: .topLeading,
+          startRadius: 4,
+          endRadius: 90
+        )
+      }
+  }
+
+  private func genreGradientPalette(for seed: String) -> [Color] {
+    let palettes: [[Color]] = [
+      [Color(red: 0.11, green: 0.23, blue: 0.52), Color(red: 0.32, green: 0.62, blue: 0.97)],
+      [Color(red: 0.20, green: 0.13, blue: 0.45), Color(red: 0.62, green: 0.31, blue: 0.93)],
+      [Color(red: 0.08, green: 0.35, blue: 0.28), Color(red: 0.29, green: 0.76, blue: 0.53)],
+      [Color(red: 0.47, green: 0.16, blue: 0.15), Color(red: 0.93, green: 0.42, blue: 0.28)],
+      [Color(red: 0.31, green: 0.21, blue: 0.07), Color(red: 0.93, green: 0.67, blue: 0.20)],
+      [Color(red: 0.12, green: 0.28, blue: 0.36), Color(red: 0.24, green: 0.73, blue: 0.78)],
+      [Color(red: 0.33, green: 0.12, blue: 0.34), Color(red: 0.93, green: 0.34, blue: 0.61)],
+      [Color(red: 0.12, green: 0.16, blue: 0.24), Color(red: 0.36, green: 0.46, blue: 0.69)]
+    ]
+
+    let scalarSum = seed.unicodeScalars.reduce(into: 0) { partialResult, scalar in
+      partialResult = partialResult &+ Int(scalar.value)
+    }
+    let index = abs(scalarSum) % palettes.count
+    return palettes[index]
+  }
+
   private var placeholder: some View {
     RoundedRectangle(cornerRadius: 16, style: .continuous)
       .fill(
@@ -1112,7 +1182,7 @@ private struct HomeBrowseCard: View {
   }
 }
 
-private struct DriveMusicSongsPageView: View {
+struct DriveMusicSongsPageView: View {
   @EnvironmentObject private var player: PlayerEngine
 
   let title: String

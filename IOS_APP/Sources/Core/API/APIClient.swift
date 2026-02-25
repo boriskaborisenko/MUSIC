@@ -95,6 +95,7 @@ final class APIClient {
   private var driveMusicTrackPathByID: [String: String] = [:]
   private var driveMusicDirectURLByID: [String: String] = [:]
   private var driveMusicMetadataByID: [String: DriveMusicTrackMetadata] = [:]
+  private var driveMusicArtistPathByName: [String: String] = [:]
   private var hasWarmedDriveMusicSession = false
 
   init(metadataBaseURL: URL, playbackBaseURL: URL, session: URLSession = .shared) {
@@ -117,6 +118,49 @@ final class APIClient {
       throw APIClientError.serverError("Legacy track source is no longer supported. Re-add the track from Search.")
     }
     return try await resolvePlaybackDriveMusic(token: token)
+  }
+
+  func resolveDriveMusicArtistPagePath(artistName: String, preferredPath: String? = nil) async throws -> String {
+    let trimmedArtist = artistName.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmedArtist.isEmpty else {
+      throw APIClientError.serverError("Artist name is empty.")
+    }
+
+    if let preferredPath {
+      let normalizedPreferred = normalizeDriveMusicPath(preferredPath)
+      if normalizedPreferred.hasPrefix("/artist/"), normalizedPreferred.hasSuffix(".html") {
+        cacheDriveMusicArtistPath(artistName: trimmedArtist, path: normalizedPreferred)
+        return normalizedPreferred
+      }
+    }
+
+    let lookupKey = normalizeDriveMusicArtistLookupKey(trimmedArtist)
+    if let cached = driveMusicArtistPathByName[lookupKey] {
+      return cached
+    }
+
+    let html = try await fetchDriveMusicSearchHTML(query: trimmedArtist)
+    let candidates = parseDriveMusicArtistSearchCandidates(html: html)
+    guard !candidates.isEmpty else {
+      throw APIClientError.serverError("Could not find artist page on DriveMusic.")
+    }
+
+    if let exact = candidates.first(where: { normalizeDriveMusicArtistLookupKey($0.name) == lookupKey }) {
+      cacheDriveMusicArtistPath(artistName: trimmedArtist, path: exact.path)
+      return exact.path
+    }
+
+    if let partial = candidates.first(where: {
+      let candidateKey = normalizeDriveMusicArtistLookupKey($0.name)
+      return !candidateKey.isEmpty && (candidateKey.contains(lookupKey) || lookupKey.contains(candidateKey))
+    }) {
+      cacheDriveMusicArtistPath(artistName: trimmedArtist, path: partial.path)
+      return partial.path
+    }
+
+    let first = candidates[0]
+    cacheDriveMusicArtistPath(artistName: trimmedArtist, path: first.path)
+    return first.path
   }
 
   func fetchDriveMusicNews(category: DriveMusicNewsCategory) async throws -> [SongSearchItem] {
@@ -475,6 +519,24 @@ private extension APIClient {
     }
   }
 
+  func cacheDriveMusicArtistPath(artistName: String, path: String) {
+    let key = normalizeDriveMusicArtistLookupKey(artistName)
+    guard !key.isEmpty else { return }
+
+    let normalizedPath = normalizeDriveMusicPath(path)
+    guard normalizedPath.hasPrefix("/artist/"), normalizedPath.hasSuffix(".html") else { return }
+
+    driveMusicArtistPathByName[key] = normalizedPath
+  }
+
+  func normalizeDriveMusicArtistLookupKey(_ value: String) -> String {
+    value
+      .decodingBasicHTMLEntities()
+      .collapsingWhitespace()
+      .lowercased()
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
   func parseDriveMusicSongRows(html: String) -> [SongSearchItem] {
     let rowPattern = #"(?s)<div class=\"music-popular-wrapper\">\s*(.*?)<div class=\"popular-progress\"></div>\s*</div>"#
     let rowMatches = html.allMatches(pattern: rowPattern)
@@ -519,6 +581,7 @@ private extension APIClient {
 
     let compositionHTML = rowHTML.firstMatch(pattern: #"(?s)<div class=['\"]popular-play-composition['\"]>(.*?)</div>"#)?[safe: 1] ?? ""
     let artistName = compositionHTML.strippingHTMLTags().decodingBasicHTMLEntities().collapsingWhitespace()
+    let artistPath = compositionHTML.firstMatch(pattern: #"(?is)<a\b[^>]*href=\"(/artist/[^\"]+\.html)\"[^>]*>"#)?[safe: 1]
     let durationText = rowHTML.firstMatch(pattern: #"<div class=\"popular-download-number\">\s*([0-9:]+)\s*</div>"#)?[safe: 1] ?? ""
     let auxText = rowHTML.firstMatch(pattern: #"<div class=\"popular-download-date\">\s*(.*?)\s*</div>"#)?[safe: 1] ?? ""
     let bitrateKbps = Int(auxText.firstMatch(pattern: #"(\d+)\s*kbps"#)?[safe: 1] ?? "")
@@ -531,13 +594,17 @@ private extension APIClient {
       albumName: nil
     )
 
+    if let artistPath, !artistName.isEmpty {
+      cacheDriveMusicArtistPath(artistName: artistName, path: artistPath)
+    }
+
     cacheDriveMusicTrackContext(trackID: trackID, path: path, directURL: directURL, metadata: metadata)
 
     return SongSearchItem(
       type: "SONG",
       videoId: makeDriveMusicVideoID(trackID: trackID, path: path),
       name: title,
-      artist: artistName.isEmpty ? nil : ArtistReference(name: artistName, artistId: nil),
+      artist: artistName.isEmpty ? nil : ArtistReference(name: artistName, artistId: artistPath),
       album: nil,
       duration: metadata.durationSec,
       thumbnails: []
@@ -802,6 +869,28 @@ private extension APIClient {
     }
 
     return nil
+  }
+
+  func parseDriveMusicArtistSearchCandidates(html: String) -> [(name: String, path: String)] {
+    var seenPaths = Set<String>()
+    var items: [(name: String, path: String)] = []
+
+    for groups in html.allMatches(pattern: #"(?is)<a\b[^>]*href=\"(/artist/[^\"]+\.html)\"[^>]*>(.*?)</a>"#) {
+      guard let rawHref = groups[safe: 1], let rawInner = groups[safe: 2] else { continue }
+      let path = normalizeDriveMusicPath(rawHref)
+      guard path.hasPrefix("/artist/"), path.hasSuffix(".html"), !seenPaths.contains(path) else { continue }
+
+      let name = rawInner
+        .strippingHTMLTags()
+        .decodingBasicHTMLEntities()
+        .collapsingWhitespace()
+
+      guard !name.isEmpty else { continue }
+      seenPaths.insert(path)
+      items.append((name: name, path: path))
+    }
+
+    return items
   }
 
   func makeDriveMusicNextPagePathFallback(from path: String) -> String? {
