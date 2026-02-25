@@ -1,6 +1,6 @@
 import Foundation
 
-struct SongSearchItem: Decodable, Identifiable, Hashable {
+struct SongSearchItem: Codable, Identifiable, Hashable {
   let type: String
   let videoId: String
   let name: String
@@ -30,17 +30,17 @@ struct SongSearchItem: Decodable, Identifiable, Hashable {
   }
 }
 
-struct ArtistReference: Decodable, Hashable {
+struct ArtistReference: Codable, Hashable {
   let name: String
   let artistId: String?
 }
 
-struct AlbumReference: Decodable, Hashable {
+struct AlbumReference: Codable, Hashable {
   let name: String
   let albumId: String?
 }
 
-struct Thumbnail: Decodable, Hashable {
+struct Thumbnail: Codable, Hashable {
   let url: String
   let width: Int?
   let height: Int?

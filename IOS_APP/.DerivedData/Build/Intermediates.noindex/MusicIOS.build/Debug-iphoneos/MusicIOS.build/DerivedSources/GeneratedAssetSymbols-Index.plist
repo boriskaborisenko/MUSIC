@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>colors</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Support/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACColorNameLaunchBackground</string>
+			<key>relativePath</key>
+			<string>./LaunchBackground.colorset</string>
+			<key>swiftSymbol</key>
+			<string>launchBackground</string>
+		</dict>
+	</array>
+	<key>images</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Support/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameLaunchLogo</string>
+			<key>relativePath</key>
+			<string>./LaunchLogo.imageset</string>
+			<key>swiftSymbol</key>
+			<string>launchLogo</string>
+		</dict>
+	</array>
+	<key>symbols</key>
+	<array/>
+</dict>
+</plist>

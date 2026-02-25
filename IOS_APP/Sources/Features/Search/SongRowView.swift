@@ -5,6 +5,9 @@ struct SongRowView: View {
   let isPlaying: Bool
   let onTap: () -> Void
 
+  @State private var fallbackArtwork: UIImage?
+  @State private var isLoadingFallbackArtwork = false
+
   var body: some View {
     Button(action: onTap) {
       HStack(spacing: 12) {
@@ -63,9 +66,26 @@ struct SongRowView: View {
       .frame(width: 52, height: 52)
       .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     } else {
-      placeholderArtwork
-        .frame(width: 52, height: 52)
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+      Group {
+        if let fallbackArtwork {
+          Image(uiImage: fallbackArtwork)
+            .resizable()
+            .scaledToFill()
+        } else {
+          ZStack {
+            placeholderArtwork
+            if isLoadingFallbackArtwork {
+              ProgressView()
+                .controlSize(.small)
+            }
+          }
+          .task(id: song.videoId) {
+            await loadFallbackArtworkIfNeeded()
+          }
+        }
+      }
+      .frame(width: 52, height: 52)
+      .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
   }
 
@@ -91,5 +111,14 @@ struct SongRowView: View {
     }
     return artist
   }
-}
 
+  private func loadFallbackArtworkIfNeeded() async {
+    guard song.primaryArtworkURL == nil else { return }
+    guard fallbackArtwork == nil else { return }
+    guard !isLoadingFallbackArtwork else { return }
+
+    isLoadingFallbackArtwork = true
+    fallbackArtwork = await MusicBrainzCoverArtService.shared.artworkImage(for: song)
+    isLoadingFallbackArtwork = false
+  }
+}

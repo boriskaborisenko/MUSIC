@@ -1,0 +1,70 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildOnly"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "259f53b650a3877238fd5e27986e0ea9a4a02967220571e980b627458150d657"
+    }
+  ],
+  "containerPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/MusicIOS.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "undefined_arch",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : true,
+      "platform" : "iphoneos",
+      "sdk" : "iphoneos26.2",
+      "sdkVariant" : "iphoneos",
+      "supportedArchitectures" : [
+        "armv4t",
+        "armv5",
+        "armv6",
+        "armv7",
+        "armv7f",
+        "armv7s",
+        "armv7k",
+        "arm64",
+        "arm64e"
+      ],
+      "targetArchitecture" : "undefined_arch"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Products",
+      "derivedDataPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData",
+      "indexDataStoreFolderPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+          "CODE_SIGNING_ALLOWED" : "NO",
+          "SDKROOT" : "iphoneos26.2"
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "ACTION" : "build",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

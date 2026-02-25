@@ -1,0 +1,189 @@
+{
+  "" : {
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOS-primary.dia",
+    "emit-module-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOS-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOS-primary-emit-module.dia",
+    "pch" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOS-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOS-primary.swiftdeps"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/App/ContentView.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/App/MusicIOSApp.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MusicIOSApp~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/API/APIClient.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIClient~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Config/AppConfiguration.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/AppConfiguration~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Library/LibraryStore.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryStore~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Models/APIEnvelope.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/APIEnvelope~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Models/PlaybackModels.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaybackModels~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Models/SongModels.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongModels~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Player/PlayerEngine.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlayerEngine~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Core/Utilities/DurationFormatter.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/DurationFormatter~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/Library/LibraryView.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/LibraryView~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/Library/PlaylistPickerSheet.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/PlaylistPickerSheet~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/NowPlaying/MiniPlayerBar.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/MiniPlayerBar~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/NowPlaying/NowPlayingView.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/NowPlayingView~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/Search/SearchView.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchView~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/Search/SearchViewModel.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SearchViewModel~partial.swiftmodule"
+  },
+  "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/Sources/Features/Search/SongRowView.swift" : {
+    "const-values" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.swiftconstvalues",
+    "dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.d",
+    "diagnostics" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.dia",
+    "index-unit-output-path" : "/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.o",
+    "llvm-bc" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.bc",
+    "object" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.o",
+    "swift-dependencies" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView.swiftdeps",
+    "swiftmodule" : "/Users/boriskaborisenko/Desktop/MUSIC/IOS_APP/.DerivedData/Build/Intermediates.noindex/MusicIOS.build/Debug-iphoneos/MusicIOS.build/Objects-normal/arm64/SongRowView~partial.swiftmodule"
+  }
+}

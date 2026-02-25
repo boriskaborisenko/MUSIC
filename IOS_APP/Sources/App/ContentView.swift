@@ -1,45 +1,108 @@
 import SwiftUI
+import Combine
 
 struct ContentView: View {
   @EnvironmentObject private var player: PlayerEngine
-  @State private var selectedTab: Tab = .search
+  @EnvironmentObject private var library: LibraryStore
+  @State private var selectedTab: Tab = .home
   @State private var isNowPlayingPresented = false
+  @State private var isKeyboardVisible = false
+  @State private var showStartupSplash = true
+  @State private var startupSplashSpinning = false
+  @State private var didStartStartupSplash = false
+  private let miniPlayerTabBarOffset: CGFloat = 60
+
+  private var shouldShowMiniPlayer: Bool {
+    guard player.currentTrack != nil else { return false }
+    if selectedTab == .search, isKeyboardVisible {
+      return false
+    }
+    return true
+  }
 
   var body: some View {
-    ZStack {
-      TabView(selection: $selectedTab) {
-        ListenNowPlaceholderView()
-          .tabItem {
-            Label("Home", systemImage: "house.fill")
-          }
-          .tag(Tab.home)
-
-        SearchView()
-          .tabItem {
-            Label("Search", systemImage: "magnifyingglass")
-          }
-          .tag(Tab.search)
-
-        LibraryPlaceholderView()
-          .tabItem {
-            Label("Library", systemImage: "music.note.list")
-          }
-          .tag(Tab.library)
-      }
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-        if player.currentTrack != nil {
-          MiniPlayerBar(
-            isPresented: $isNowPlayingPresented
-          )
-          .environmentObject(player)
-          .transition(.move(edge: .bottom).combined(with: .opacity))
+    TabView(selection: $selectedTab) {
+      HomeView(selectedTab: $selectedTab)
+        .tabItem {
+          Label("Home", systemImage: "house.fill")
         }
+        .tag(Tab.home)
+
+      SearchView()
+        .tabItem {
+          Label("Search", systemImage: "magnifyingglass")
+        }
+        .tag(Tab.search)
+
+      CollectionLibraryView()
+        .tabItem {
+          Label("Collection", systemImage: "heart.fill")
+        }
+        .tag(Tab.collection)
+
+      PlaylistsLibraryView()
+        .tabItem {
+          Label("Playlists", systemImage: "music.note.list")
+        }
+        .tag(Tab.playlists)
+
+      RadioView()
+        .tabItem {
+          Label("Radio", systemImage: "dot.radiowaves.left.and.right")
+        }
+        .tag(Tab.radio)
+    }
+    .overlay(alignment: .bottom) {
+      if shouldShowMiniPlayer {
+        MiniPlayerBar(
+          isPresented: $isNowPlayingPresented
+        )
+        .environmentObject(player)
+        .padding(.horizontal, 12)
+        .offset(y: -miniPlayerTabBarOffset)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+      }
+    }
+    .overlay {
+      if showStartupSplash {
+        StartupSplashOverlay(isSpinning: startupSplashSpinning)
+          .transition(.opacity)
+          .zIndex(20)
       }
     }
     .animation(.spring(response: 0.3, dampingFraction: 0.9), value: player.currentTrack?.videoId)
+    .animation(.spring(response: 0.3, dampingFraction: 0.9), value: isKeyboardVisible)
+    .onAppear {
+      startStartupSplashIfNeeded()
+    }
+    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+      isKeyboardVisible = true
+    }
+    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+      isKeyboardVisible = false
+    }
     .sheet(isPresented: $isNowPlayingPresented) {
       NowPlayingView()
         .environmentObject(player)
+        .environmentObject(library)
+        .presentationDetents([.fraction(0.94)])
+        .presentationDragIndicator(.visible)
+    }
+  }
+
+  private func startStartupSplashIfNeeded() {
+    guard !didStartStartupSplash else { return }
+    didStartStartupSplash = true
+    startupSplashSpinning = true
+
+    Task {
+      try? await Task.sleep(for: .milliseconds(900))
+      if Task.isCancelled { return }
+      await MainActor.run {
+        withAnimation(.easeOut(duration: 0.2)) {
+          showStartupSplash = false
+        }
+      }
     }
   }
 }
@@ -47,63 +110,1342 @@ struct ContentView: View {
 private enum Tab {
   case home
   case search
-  case library
+  case radio
+  case collection
+  case playlists
 }
 
-private struct ListenNowPlaceholderView: View {
+private struct StartupSplashOverlay: View {
+  let isSpinning: Bool
+
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+  var body: some View {
+    ZStack {
+      Color("LaunchBackground")
+        .ignoresSafeArea()
+
+      Image("LaunchLogo")
+        .resizable()
+        .scaledToFit()
+        .frame(width: 84, height: 84)
+        .rotationEffect(.degrees(reduceMotion ? 0 : (isSpinning ? 360 : 0)))
+        .animation(
+          reduceMotion
+            ? nil
+            : .linear(duration: 1.0).repeatForever(autoreverses: false),
+          value: isSpinning
+        )
+    }
+    .allowsHitTesting(true)
+    .accessibilityHidden(true)
+  }
+}
+
+private struct HomeView: View {
+  @EnvironmentObject private var player: PlayerEngine
+  @EnvironmentObject private var library: LibraryStore
+  @EnvironmentObject private var radio: RadioStore
+
+  @Binding var selectedTab: Tab
+
+  @StateObject private var viewModel = HomeViewModel()
+
+  private var driveMusicCollectionSongs: [SongSearchItem] {
+    library.collectionSongs.filter(isDriveMusicSong)
+  }
+
+  private var homePlaylistsWithDriveMusic: [LibraryStore.LibraryPlaylist] {
+    library.playlists.filter { playlist in
+      playlist.songs.contains(where: isDriveMusicSong)
+    }
+  }
+
   var body: some View {
     NavigationStack {
       ScrollView {
-        VStack(alignment: .leading, spacing: 20) {
-          Text("Listen Now")
-            .font(.largeTitle.weight(.bold))
-            .frame(maxWidth: .infinity, alignment: .leading)
+        LazyVStack(alignment: .leading, spacing: 18) {
+          homeHeroSection
 
-          RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(
-              LinearGradient(
-                colors: [.pink.opacity(0.8), .orange.opacity(0.7)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-              )
-            )
-            .frame(height: 180)
-            .overlay(alignment: .bottomLeading) {
-              VStack(alignment: .leading, spacing: 6) {
-                Text("Native iOS Prototype")
-                  .font(.headline.weight(.semibold))
-                Text("Search and play from your private YTMusic backend")
+          if viewModel.isLoadingHomeFeed, viewModel.homeFeed == nil {
+            HomeCard {
+              HStack(spacing: 10) {
+                ProgressView()
+                Text("Loading DriveMusic…")
                   .font(.subheadline)
                   .foregroundStyle(.secondary)
               }
-              .padding(18)
+              .frame(maxWidth: .infinity, alignment: .center)
+              .padding(.vertical, 8)
             }
+          }
 
-          Text("This tab is a placeholder for a future Apple Music-like home screen.")
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+          if let message = viewModel.homeFeedErrorMessage, viewModel.homeFeed == nil {
+            HomeCard {
+              VStack(alignment: .leading, spacing: 8) {
+                Text("Couldn’t load DriveMusic home")
+                  .font(.subheadline.weight(.semibold))
+                Text(message)
+                  .font(.footnote)
+                  .foregroundStyle(.secondary)
+                Button("Retry") {
+                  Task {
+                    await viewModel.refreshAll()
+                  }
+                }
+                .buttonStyle(.bordered)
+              }
+            }
+          }
+
+          if let feed = viewModel.homeFeed {
+            if !feed.topPlaylists.isEmpty {
+              topPlaylistsSection(feed)
+            }
+            if !feed.topGenres.isEmpty {
+              topGenresSection(feed)
+            }
+            if !curatedBrowseLinks.isEmpty || !feed.quickLinks.isEmpty {
+              quickLinksSection(feed)
+            }
+            if !feed.chartSongs.filter(isDriveMusicSong).isEmpty {
+              chartSection(feed)
+            }
+          }
+
+          if !radio.stations.isEmpty {
+            radioSection
+          }
+
+          if !driveMusicCollectionSongs.isEmpty {
+            collectionSection
+          }
+
+          if !homePlaylistsWithDriveMusic.isEmpty {
+            playlistsSection
+          }
         }
-        .padding()
+        .padding(.horizontal, 16)
+        .padding(.top, 10)
+        .padding(.bottom, 120)
       }
       .background(Color(.systemGroupedBackground))
-    }
-  }
-}
-
-private struct LibraryPlaceholderView: View {
-  var body: some View {
-    NavigationStack {
-      List {
-        Section("Planned") {
-          Label("Local Library", systemImage: "music.note.house")
-          Label("Playlists", systemImage: "music.note.list")
-          Label("Recently Played", systemImage: "clock.arrow.circlepath")
-          Label("Downloads", systemImage: "arrow.down.circle")
+      .navigationTitle("Home")
+      .navigationBarTitleDisplayMode(.large)
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            selectedTab = .search
+          } label: {
+            Image(systemName: "magnifyingglass")
+          }
         }
       }
-      .navigationTitle("Library")
+      .task {
+        await viewModel.loadAllIfNeeded()
+      }
+      .refreshable {
+        await viewModel.refreshAll()
+      }
+    }
+  }
+
+  private var homeHeroSection: some View {
+    HomeCard {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Discover")
+          .font(.footnote.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .textCase(.uppercase)
+
+        Text("DriveMusic Home")
+          .font(.title2.weight(.bold))
+
+        Text("Playlists, genres, chart, and your library in one place.")
+          .font(.subheadline)
+          .foregroundStyle(.secondary)
+
+        HStack(spacing: 10) {
+          Button {
+            selectedTab = .search
+          } label: {
+            Label("Search", systemImage: "magnifyingglass")
+          }
+          .buttonStyle(.borderedProminent)
+
+          NavigationLink {
+            DriveMusicSongsPageView(title: "Chart", path: "/hits_top40.html")
+          } label: {
+            Label("Open Chart", systemImage: "chart.bar.fill")
+          }
+          .buttonStyle(.bordered)
+        }
+        .padding(.top, 2)
+      }
+    }
+  }
+
+  private func topPlaylistsSection(_ feed: DriveMusicHomeFeed) -> some View {
+    VStack(alignment: .leading, spacing: 10) {
+      Text("Top Playlists")
+        .font(.headline)
+
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 12) {
+          ForEach(Array(feed.topPlaylists.prefix(12))) { item in
+            NavigationLink {
+              DriveMusicSongsPageView(title: item.title, path: item.path)
+            } label: {
+              HomeBrowseCard(
+                title: item.title,
+                subtitle: item.subtitle,
+                imageURL: item.imageURL,
+                size: CGSize(width: 166, height: 166)
+              )
+            }
+            .buttonStyle(.plain)
+          }
+        }
+        .padding(.vertical, 2)
+      }
+    }
+  }
+
+  private func topGenresSection(_ feed: DriveMusicHomeFeed) -> some View {
+    VStack(alignment: .leading, spacing: 10) {
+      Text("Top Genres")
+        .font(.headline)
+
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 12) {
+          ForEach(Array(feed.topGenres.prefix(12))) { item in
+            NavigationLink {
+              DriveMusicSongsPageView(title: item.title, path: item.path)
+            } label: {
+              HomeBrowseCard(
+                title: item.title,
+                subtitle: nil,
+                imageURL: item.imageURL,
+                size: CGSize(width: 126, height: 126)
+              )
+            }
+            .buttonStyle(.plain)
+          }
+        }
+        .padding(.vertical, 2)
+      }
+    }
+  }
+
+  private func quickLinksSection(_ feed: DriveMusicHomeFeed) -> some View {
+    let items = curatedBrowseLinks.isEmpty ? Array(feed.quickLinks.prefix(12)) : curatedBrowseLinks
+
+    return VStack(alignment: .leading, spacing: 10) {
+      Text("Browse")
+        .font(.headline)
+
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 8) {
+          ForEach(items) { item in
+            NavigationLink {
+              DriveMusicSongsPageView(title: item.title, path: item.path)
+            } label: {
+              Text(item.title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                  Capsule(style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+                )
+                .overlay {
+                  Capsule(style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5)
+                }
+            }
+            .buttonStyle(.plain)
+          }
+        }
+      }
+    }
+  }
+
+  private var curatedBrowseLinks: [DriveMusicQuickLink] {
+    [
+      DriveMusicQuickLink(title: "New Releases", path: "/zarubezhnye_novinki/"),
+      DriveMusicQuickLink(title: "Rock", path: "/rock_music/"),
+      DriveMusicQuickLink(title: "Indie", path: "/indie/"),
+      DriveMusicQuickLink(title: "Road Trip", path: "/road_rock/")
+    ]
+  }
+
+  private func chartSection(_ feed: DriveMusicHomeFeed) -> some View {
+    let songs = Array(feed.chartSongs.filter(isDriveMusicSong).prefix(6))
+
+    return VStack(alignment: .leading, spacing: 10) {
+      HStack {
+        Text("DriveMusic Chart")
+          .font(.headline)
+        Spacer()
+        NavigationLink("All") {
+          DriveMusicSongsPageView(title: "DriveMusic Chart", path: "/hits_top40.html")
+        }
+        .font(.subheadline.weight(.medium))
+      }
+
+      HomeCard {
+        VStack(spacing: 0) {
+          ForEach(Array(songs.enumerated()), id: \.element.id) { row in
+            let index = row.offset
+            let song = row.element
+
+            SongRowView(
+              song: song,
+              isPlaying: player.currentTrack?.videoId == song.videoId && player.isPlaying
+            ) {
+              player.play(song: song, queue: feed.chartSongs.filter(isDriveMusicSong))
+            }
+            .padding(.vertical, 6)
+
+            if index < songs.count - 1 {
+              Divider()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var newReleasesSection: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      HomeSectionHeader(
+        title: "New Releases",
+        trailingTitle: "Refresh"
+      ) {
+        Task {
+          await viewModel.refreshNews()
+        }
+      }
+
+      HomeCard {
+        VStack(alignment: .leading, spacing: 10) {
+          newsCategoryTabs
+
+          if viewModel.isLoadingNews && viewModel.newsSongs.isEmpty {
+            HStack(spacing: 10) {
+              ProgressView()
+              Text("Loading new releases…")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.vertical, 18)
+          } else if let error = viewModel.newsErrorMessage, viewModel.newsSongs.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+              Text("Couldn’t load new releases")
+                .font(.subheadline.weight(.semibold))
+              Text(error)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+              Button("Retry") {
+                Task {
+                  await viewModel.refreshNews()
+                }
+              }
+              .buttonStyle(.bordered)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+          } else if viewModel.newsSongs.isEmpty {
+            Text("Nothing here yet")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+              .frame(maxWidth: .infinity, alignment: .center)
+              .padding(.vertical, 18)
+          } else {
+            songTileRail(
+              songs: Array(viewModel.newsSongs.filter(isDriveMusicSong).prefix(12)),
+              fullQueue: viewModel.newsSongs.filter(isDriveMusicSong)
+            )
+          }
+        }
+      }
+    }
+  }
+
+  private var newsCategoryTabs: some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(spacing: 18) {
+        ForEach(DriveMusicNewsCategory.allCases, id: \.self) { category in
+          Button {
+            viewModel.setNewsCategory(category)
+          } label: {
+            VStack(alignment: .leading, spacing: 5) {
+              Text(category.title)
+                .font(.subheadline.weight(viewModel.selectedNewsCategory == category ? .semibold : .regular))
+                .foregroundStyle(viewModel.selectedNewsCategory == category ? .primary : .secondary)
+
+              Capsule()
+                .fill(viewModel.selectedNewsCategory == category ? Color.orange : .clear)
+                .frame(height: 2)
+            }
+          }
+          .buttonStyle(.plain)
+        }
+      }
+      .padding(.top, 2)
+    }
+  }
+
+  private var radioSection: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      HomeSectionHeader(title: "Your Radio", trailingTitle: "All") {
+        selectedTab = .radio
+      }
+
+      HomeCard {
+        VStack(spacing: 0) {
+          let stations = Array(radio.stations.prefix(6))
+          ForEach(Array(stations.enumerated()), id: \.element.id) { row in
+            let index = row.offset
+            let station = row.element
+
+            HomeRadioRow(
+              station: station,
+              isPlaying: player.currentTrack?.videoId == "radio:\(station.id.uuidString)" && player.isPlaying
+            ) {
+              player.playRadio(station: station)
+            }
+            .padding(.vertical, 6)
+
+            if index < stations.count - 1 {
+              Divider()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var collectionSection: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      HomeSectionHeader(title: "Recently Added", trailingTitle: "All") {
+        selectedTab = .collection
+      }
+
+      HomeCard {
+        VStack(spacing: 0) {
+          let songs = Array(driveMusicCollectionSongs.prefix(6))
+          ForEach(Array(songs.enumerated()), id: \.element.id) { row in
+            let index = row.offset
+            let song = row.element
+
+            SongRowView(
+              song: song,
+              isPlaying: player.currentTrack?.videoId == song.videoId && player.isPlaying
+            ) {
+              player.play(song: song, queue: driveMusicCollectionSongs)
+            }
+            .padding(.vertical, 6)
+
+            if index < songs.count - 1 {
+              Divider()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var playlistsSection: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      HomeSectionHeader(title: "Playlists", trailingTitle: "All") {
+        selectedTab = .playlists
+      }
+
+      HomeCard {
+        VStack(spacing: 0) {
+          let playlists = Array(homePlaylistsWithDriveMusic.prefix(4))
+          ForEach(Array(playlists.enumerated()), id: \.element.id) { row in
+            let index = row.offset
+            let playlist = row.element
+            let supportedSongCount = playlist.songs.filter(isDriveMusicSong).count
+            Button {
+              selectedTab = .playlists
+            } label: {
+              HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                  .fill(Color(.secondarySystemBackground))
+                  .frame(width: 44, height: 44)
+                  .overlay {
+                    Image(systemName: "music.note.list")
+                      .foregroundStyle(.secondary)
+                  }
+
+                VStack(alignment: .leading, spacing: 3) {
+                  Text(playlist.name)
+                    .font(.body.weight(.medium))
+                    .lineLimit(1)
+                    .foregroundStyle(.primary)
+                  Text("\(supportedSongCount) songs")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                  .font(.caption.weight(.semibold))
+                  .foregroundStyle(.tertiary)
+              }
+              .padding(.vertical, 8)
+              .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if index < playlists.count - 1 {
+              Divider()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private func songTileRail(songs: [SongSearchItem], fullQueue: [SongSearchItem]) -> some View {
+    let columns = chunkedForTwoRowRail(songs)
+
+    return ScrollView(.horizontal, showsIndicators: false) {
+      HStack(alignment: .top, spacing: 12) {
+        ForEach(Array(columns.enumerated()), id: \.offset) { column in
+          VStack(spacing: 12) {
+            ForEach(column.element) { song in
+              HomeSongTile(
+                song: song,
+                isPlaying: player.currentTrack?.videoId == song.videoId && player.isPlaying
+              ) {
+                player.play(song: song, queue: fullQueue)
+              }
+            }
+
+            if column.element.count == 1 {
+              Color.clear
+                .frame(width: HomeSongTile.tileSize, height: HomeSongTile.tileSize)
+            }
+          }
+        }
+      }
+      .padding(.vertical, 2)
+    }
+  }
+
+  private func chunkedForTwoRowRail(_ songs: [SongSearchItem]) -> [[SongSearchItem]] {
+    guard !songs.isEmpty else { return [] }
+    var result: [[SongSearchItem]] = []
+    var index = 0
+    while index < songs.count {
+      let end = min(index + 2, songs.count)
+      result.append(Array(songs[index ..< end]))
+      index = end
+    }
+    return result
+  }
+
+  private func isDriveMusicSong(_ song: SongSearchItem) -> Bool {
+    song.videoId.hasPrefix("dm:")
+  }
+}
+
+@MainActor
+private final class HomeViewModel: ObservableObject {
+  @Published var selectedNewsCategory: DriveMusicNewsCategory = .international
+  @Published private(set) var homeFeed: DriveMusicHomeFeed?
+  @Published private(set) var isLoadingHomeFeed = false
+  @Published private(set) var homeFeedErrorMessage: String?
+  @Published private(set) var newsSongs: [SongSearchItem] = []
+  @Published private(set) var isLoadingNews = false
+  @Published private(set) var newsErrorMessage: String?
+
+  private let apiClient: APIClient
+  private var homeFeedCache: DriveMusicHomeFeed?
+  private var newsCache: [DriveMusicNewsCategory: [SongSearchItem]] = [:]
+
+  init(apiClient: APIClient = .shared) {
+    self.apiClient = apiClient
+  }
+
+  func setNewsCategory(_ category: DriveMusicNewsCategory) {
+    guard selectedNewsCategory != category else { return }
+    selectedNewsCategory = category
+    newsErrorMessage = nil
+
+    if let cached = newsCache[category] {
+      newsSongs = cached
+    } else {
+      newsSongs = []
+    }
+  }
+
+  func loadNewsIfNeeded() async {
+    await loadNews(force: false)
+  }
+
+  func loadAllIfNeeded() async {
+    await loadHomeFeed(force: false)
+  }
+
+  func refreshAll() async {
+    await loadHomeFeed(force: true)
+  }
+
+  func refreshNews() async {
+    await loadNews(force: true)
+  }
+
+  private func loadHomeFeed(force: Bool) async {
+    if !force, let cached = homeFeedCache {
+      homeFeed = cached
+      homeFeedErrorMessage = nil
+      isLoadingHomeFeed = false
+      return
+    }
+
+    isLoadingHomeFeed = true
+    if force {
+      homeFeedErrorMessage = nil
+    }
+
+    do {
+      let feed = try await apiClient.fetchDriveMusicHomeFeed()
+      if Task.isCancelled { return }
+      homeFeedCache = feed
+      homeFeed = feed
+      homeFeedErrorMessage = nil
+      isLoadingHomeFeed = false
+    } catch {
+      if Task.isCancelled { return }
+      if homeFeed == nil {
+        homeFeedErrorMessage = error.localizedDescription
+      }
+      isLoadingHomeFeed = false
+    }
+  }
+
+  private func loadNews(force: Bool) async {
+    let category = selectedNewsCategory
+
+    if !force, let cached = newsCache[category], !cached.isEmpty {
+      newsSongs = cached
+      newsErrorMessage = nil
+      isLoadingNews = false
+      return
+    }
+
+    isLoadingNews = true
+    if force {
+      newsErrorMessage = nil
+    }
+
+    do {
+      let songs = try await apiClient.fetchDriveMusicNews(category: category)
+      if Task.isCancelled { return }
+      newsCache[category] = songs
+
+      guard selectedNewsCategory == category else { return }
+      newsSongs = songs
+      newsErrorMessage = nil
+      isLoadingNews = false
+    } catch {
+      if Task.isCancelled { return }
+      guard selectedNewsCategory == category else { return }
+      if newsSongs.isEmpty {
+        newsErrorMessage = error.localizedDescription
+      }
+      isLoadingNews = false
     }
   }
 }
 
+private struct HomeSectionHeader: View {
+  let title: String
+  var trailingTitle: String?
+  var action: (() -> Void)?
+
+  init(title: String, trailingTitle: String? = nil, action: (() -> Void)? = nil) {
+    self.title = title
+    self.trailingTitle = trailingTitle
+    self.action = action
+  }
+
+  var body: some View {
+    HStack {
+      Text(title)
+        .font(.headline)
+      Spacer()
+      if let trailingTitle, let action {
+        Button(trailingTitle, action: action)
+          .font(.subheadline.weight(.medium))
+      }
+    }
+  }
+}
+
+private struct HomeSongTile: View {
+  static let tileSize: CGFloat = 152
+
+  let song: SongSearchItem
+  let isPlaying: Bool
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      ZStack(alignment: .bottomLeading) {
+        artwork
+          .frame(width: Self.tileSize, height: Self.tileSize)
+          .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+        LinearGradient(
+          colors: [.clear, .black.opacity(0.12), .black.opacity(0.72)],
+          startPoint: .top,
+          endPoint: .bottom
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+        VStack(alignment: .leading, spacing: 3) {
+          HStack(spacing: 6) {
+            if isPlaying {
+              Image(systemName: "speaker.wave.2.fill")
+                .font(.caption2.weight(.semibold))
+            }
+            if let duration = song.duration {
+              Text(DurationFormatter.mmss(duration))
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.white.opacity(0.9))
+            }
+          }
+
+          Text(song.name)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white)
+            .lineLimit(2)
+
+          Text(song.artistName)
+            .font(.caption2)
+            .foregroundStyle(.white.opacity(0.82))
+            .lineLimit(1)
+        }
+        .padding(10)
+      }
+      .overlay {
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+          .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+      }
+    }
+    .buttonStyle(.plain)
+  }
+
+  @ViewBuilder
+  private var artwork: some View {
+    if let url = song.primaryArtworkURL {
+      AsyncImage(url: url) { phase in
+        switch phase {
+        case let .success(image):
+          image.resizable().scaledToFill()
+        case .empty:
+          ZStack {
+            placeholder
+            ProgressView()
+              .controlSize(.small)
+          }
+        case .failure:
+          placeholder
+        @unknown default:
+          placeholder
+        }
+      }
+    } else {
+      placeholder
+    }
+  }
+
+  private var placeholder: some View {
+    RoundedRectangle(cornerRadius: 16, style: .continuous)
+      .fill(
+        LinearGradient(
+          colors: [Color(.secondarySystemBackground), Color(.tertiarySystemBackground)],
+          startPoint: .topLeading,
+          endPoint: .bottomTrailing
+        )
+      )
+      .overlay {
+        Image(systemName: "music.note")
+          .font(.title3.weight(.medium))
+          .foregroundStyle(.secondary)
+      }
+  }
+}
+
+private struct HomeCard<Content: View>: View {
+  let content: Content
+
+  init(@ViewBuilder content: () -> Content) {
+    self.content = content()
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      content
+    }
+    .padding(14)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    .overlay {
+      RoundedRectangle(cornerRadius: 18, style: .continuous)
+        .strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5)
+    }
+  }
+}
+
+private struct HomeRadioRow: View {
+  let station: RadioStation
+  let isPlaying: Bool
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      HStack(spacing: 12) {
+        artwork
+          .frame(width: 52, height: 52)
+          .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+        VStack(alignment: .leading, spacing: 4) {
+          Text(station.name)
+            .font(.body.weight(isPlaying ? .semibold : .regular))
+            .foregroundStyle(isPlaying ? .red : .primary)
+            .lineLimit(1)
+
+          Text("Radio")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+
+        Spacer(minLength: 12)
+
+        if isPlaying {
+          Image(systemName: "speaker.wave.2.fill")
+            .foregroundStyle(.red)
+            .font(.subheadline.weight(.semibold))
+        } else {
+          Image(systemName: "dot.radiowaves.left.and.right")
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(.secondary)
+        }
+      }
+      .contentShape(Rectangle())
+    }
+    .buttonStyle(.plain)
+  }
+
+  @ViewBuilder
+  private var artwork: some View {
+    if let data = station.artworkData, let image = UIImage(data: data) {
+      Image(uiImage: image)
+        .resizable()
+        .scaledToFill()
+    } else {
+      RoundedRectangle(cornerRadius: 10, style: .continuous)
+        .fill(
+          LinearGradient(
+            colors: [Color(.secondarySystemBackground), Color(.tertiarySystemBackground)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+          )
+        )
+        .overlay {
+          Image(systemName: "dot.radiowaves.left.and.right")
+            .foregroundStyle(.secondary)
+        }
+    }
+  }
+}
+
+private struct HomeRadioCard: View {
+  let station: RadioStation
+  let isPlaying: Bool
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      ZStack(alignment: .bottomLeading) {
+        artwork
+          .frame(maxWidth: .infinity)
+          .aspectRatio(1, contentMode: .fit)
+          .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+        LinearGradient(
+          colors: [.clear, .black.opacity(0.5)],
+          startPoint: .top,
+          endPoint: .bottom
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+        HStack(spacing: 6) {
+          if isPlaying {
+            Image(systemName: "speaker.wave.2.fill")
+              .font(.caption.weight(.semibold))
+          }
+
+          Text(station.name)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(2)
+            .multilineTextAlignment(.leading)
+        }
+        .foregroundStyle(.white)
+        .padding(10)
+      }
+      .overlay {
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+          .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+      }
+    }
+    .buttonStyle(.plain)
+  }
+
+  @ViewBuilder
+  private var artwork: some View {
+    if let data = station.artworkData, let image = UIImage(data: data) {
+      Image(uiImage: image)
+        .resizable()
+        .scaledToFill()
+    } else {
+      ZStack {
+        RoundedRectangle(cornerRadius: 16, style: .continuous)
+          .fill(Color(.secondarySystemBackground))
+        Image(systemName: "dot.radiowaves.left.and.right")
+          .font(.system(size: 24, weight: .medium))
+          .foregroundStyle(.secondary)
+      }
+    }
+  }
+}
+
+private struct HomeBrowseCard: View {
+  let title: String
+  let subtitle: String?
+  let imageURL: URL?
+  let size: CGSize
+
+  var body: some View {
+    ZStack(alignment: .bottomLeading) {
+      artwork
+        .frame(width: size.width, height: size.height)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+      LinearGradient(
+        colors: [.clear, .black.opacity(0.18), .black.opacity(0.72)],
+        startPoint: .top,
+        endPoint: .bottom
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+      VStack(alignment: .leading, spacing: 2) {
+        if let subtitle, !subtitle.isEmpty {
+          Text(subtitle)
+            .font(.caption2)
+            .foregroundStyle(.white.opacity(0.82))
+            .lineLimit(1)
+        }
+
+        Text(title)
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(.white)
+          .lineLimit(2)
+      }
+      .padding(10)
+    }
+    .overlay {
+      RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+    }
+  }
+
+  @ViewBuilder
+  private var artwork: some View {
+    if let imageURL {
+      AsyncImage(url: imageURL) { phase in
+        switch phase {
+        case let .success(image):
+          image.resizable().scaledToFill()
+        case .empty:
+          ZStack {
+            placeholder
+            ProgressView()
+              .controlSize(.small)
+          }
+        case .failure:
+          placeholder
+        @unknown default:
+          placeholder
+        }
+      }
+    } else {
+      placeholder
+    }
+  }
+
+  private var placeholder: some View {
+    RoundedRectangle(cornerRadius: 16, style: .continuous)
+      .fill(
+        LinearGradient(
+          colors: [Color(.secondarySystemBackground), Color(.tertiarySystemBackground)],
+          startPoint: .topLeading,
+          endPoint: .bottomTrailing
+        )
+      )
+      .overlay {
+        Image(systemName: "music.note.list")
+          .font(.title3.weight(.medium))
+          .foregroundStyle(.secondary)
+      }
+  }
+}
+
+private struct DriveMusicSongsPageView: View {
+  @EnvironmentObject private var player: PlayerEngine
+
+  let title: String
+  let path: String
+
+  @StateObject private var viewModel: DriveMusicSongsPageViewModel
+  @State private var didAttemptScrollRestore = false
+
+  init(title: String, path: String) {
+    self.title = title
+    self.path = path
+    _viewModel = StateObject(wrappedValue: DriveMusicSongsPageViewModel(path: path))
+  }
+
+  var body: some View {
+    ScrollViewReader { proxy in
+      ScrollView {
+        LazyVStack(alignment: .leading, spacing: 12) {
+          if viewModel.isLoading, viewModel.songs.isEmpty {
+            HomeCard {
+              HStack(spacing: 10) {
+                ProgressView()
+                Text("Loading tracks…")
+                  .font(.subheadline)
+                  .foregroundStyle(.secondary)
+              }
+              .frame(maxWidth: .infinity, alignment: .center)
+              .padding(.vertical, 8)
+            }
+          }
+
+          if let error = viewModel.errorMessage, viewModel.songs.isEmpty {
+            HomeCard {
+              VStack(alignment: .leading, spacing: 8) {
+                Text("Couldn’t load page")
+                  .font(.subheadline.weight(.semibold))
+                Text(error)
+                  .font(.footnote)
+                  .foregroundStyle(.secondary)
+                Button("Retry") {
+                  Task {
+                    await viewModel.refresh()
+                    await restoreScrollIfNeeded(proxy: proxy)
+                  }
+                }
+                .buttonStyle(.bordered)
+              }
+            }
+          }
+
+          if !viewModel.songs.isEmpty {
+            HomeCard {
+              VStack(spacing: 0) {
+                ForEach(Array(viewModel.songs.enumerated()), id: \.element.id) { row in
+                  let index = row.offset
+                  let song = row.element
+
+                  SongRowView(
+                    song: song,
+                    isPlaying: player.currentTrack?.videoId == song.videoId && player.isPlaying
+                  ) {
+                    player.play(song: song, queue: viewModel.songs)
+                  }
+                  .id(song.id)
+                  .padding(.vertical, 6)
+                  .onAppear {
+                    viewModel.noteVisibleSong(song.id)
+                    Task {
+                      await viewModel.loadMoreIfNeeded(currentSongID: song.id)
+                    }
+                  }
+
+                  if index < viewModel.songs.count - 1 {
+                    Divider()
+                  }
+                }
+
+                if viewModel.isLoadingMore {
+                  Divider()
+                  HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Loading more tracks…")
+                      .font(.subheadline)
+                      .foregroundStyle(.secondary)
+                  }
+                  .frame(maxWidth: .infinity, alignment: .center)
+                  .padding(.vertical, 12)
+                } else if let loadMoreError = viewModel.loadMoreErrorMessage {
+                  Divider()
+                  VStack(spacing: 8) {
+                    Text(loadMoreError)
+                      .font(.footnote)
+                      .foregroundStyle(.secondary)
+                      .multilineTextAlignment(.center)
+                    Button("Load more") {
+                      Task {
+                        await viewModel.loadNextPage()
+                      }
+                    }
+                    .buttonStyle(.bordered)
+                  }
+                  .frame(maxWidth: .infinity, alignment: .center)
+                  .padding(.vertical, 10)
+                } else if viewModel.isAutoLoadPausedForPerformance, viewModel.canLoadMore {
+                  Divider()
+                  VStack(spacing: 8) {
+                    Text("Auto-loading paused to keep scrolling smooth.")
+                      .font(.footnote)
+                      .foregroundStyle(.secondary)
+                      .multilineTextAlignment(.center)
+                    Button("Load more") {
+                      Task {
+                        await viewModel.loadNextPage()
+                      }
+                    }
+                    .buttonStyle(.bordered)
+                  }
+                  .frame(maxWidth: .infinity, alignment: .center)
+                  .padding(.vertical, 10)
+                }
+              }
+            }
+          } else if !viewModel.isLoading, viewModel.errorMessage == nil {
+            HomeCard {
+              Text("No tracks found on this page yet.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
+            }
+          }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 10)
+        .padding(.bottom, 120)
+      }
+      .background(Color(.systemGroupedBackground))
+      .task {
+        await viewModel.loadIfNeeded()
+        await restoreScrollIfNeeded(proxy: proxy)
+      }
+      .onChange(of: viewModel.songs.count) { _, _ in
+        Task {
+          await restoreScrollIfNeeded(proxy: proxy)
+        }
+      }
+    }
+    .navigationTitle(title)
+    .navigationBarTitleDisplayMode(.inline)
+    .refreshable {
+      await viewModel.refresh()
+      didAttemptScrollRestore = false
+    }
+  }
+
+  private func restoreScrollIfNeeded(proxy: ScrollViewProxy) async {
+    guard !didAttemptScrollRestore else { return }
+    guard let targetSongID = viewModel.scrollRestoreSongID else { return }
+
+    didAttemptScrollRestore = true
+    try? await Task.sleep(for: .milliseconds(120))
+    withAnimation(.easeInOut(duration: 0.2)) {
+      proxy.scrollTo(targetSongID, anchor: .top)
+    }
+  }
+}
+
+@MainActor
+private final class DriveMusicSongsPageViewModel: ObservableObject {
+  private struct CachedState {
+    var songs: [SongSearchItem]
+    var nextPagePath: String?
+    var loadedPagePaths: Set<String>
+    var lastVisibleSongID: String?
+  }
+
+  private static var cacheByPath: [String: CachedState] = [:]
+
+  @Published private(set) var songs: [SongSearchItem] = []
+  @Published private(set) var isLoading = false
+  @Published private(set) var isLoadingMore = false
+  @Published private(set) var errorMessage: String?
+  @Published private(set) var loadMoreErrorMessage: String?
+
+  private let path: String
+  private let apiClient: APIClient
+  private let cacheKey: String
+  private let paginationPrefetchThreshold = 8
+  private let autoLoadSongSoftLimit = 120
+  private var hasLoaded = false
+  private var nextPagePath: String?
+  private var loadedPagePaths = Set<String>()
+  private var lastVisibleSongID: String?
+
+  var canLoadMore: Bool {
+    nextPagePath != nil
+  }
+
+  var isAutoLoadPausedForPerformance: Bool {
+    canLoadMore && songs.count >= autoLoadSongSoftLimit
+  }
+
+  var scrollRestoreSongID: String? {
+    lastVisibleSongID
+  }
+
+  init(path: String, apiClient: APIClient = .shared) {
+    self.path = path
+    self.apiClient = apiClient
+    cacheKey = apiClient.canonicalDriveMusicPath(path)
+
+    if let cached = Self.cacheByPath[cacheKey] {
+      songs = cached.songs
+      nextPagePath = cached.nextPagePath
+      loadedPagePaths = cached.loadedPagePaths
+      lastVisibleSongID = cached.lastVisibleSongID
+      hasLoaded = !cached.songs.isEmpty || !cached.loadedPagePaths.isEmpty
+    }
+  }
+
+  func loadIfNeeded() async {
+    guard !hasLoaded else { return }
+    await load(force: false)
+  }
+
+  func refresh() async {
+    await load(force: true)
+  }
+
+  func noteVisibleSong(_ songID: String) {
+    guard songs.contains(where: { $0.id == songID }) else { return }
+    lastVisibleSongID = songID
+    persistCache()
+  }
+
+  func loadMoreIfNeeded(currentSongID: String) async {
+    guard hasLoaded else { return }
+    guard !isLoading else { return }
+    guard !isLoadingMore else { return }
+    guard nextPagePath != nil else { return }
+    guard !isAutoLoadPausedForPerformance else { return }
+
+    guard let index = songs.firstIndex(where: { $0.id == currentSongID }) else { return }
+    let thresholdIndex = max(0, songs.count - paginationPrefetchThreshold)
+    guard index >= thresholdIndex else { return }
+
+    await loadNextPage()
+  }
+
+  func loadNextPage() async {
+    guard !isLoading else { return }
+    guard !isLoadingMore else { return }
+    guard let nextPagePath else { return }
+
+    let normalized = apiClient.canonicalDriveMusicPath(nextPagePath)
+    guard !loadedPagePaths.contains(normalized) else {
+      self.nextPagePath = nil
+      persistCache()
+      return
+    }
+
+    isLoadingMore = true
+    loadMoreErrorMessage = nil
+
+    do {
+      let batch = try await apiClient.fetchDriveMusicSongsPageBatch(path: normalized)
+      if Task.isCancelled { return }
+
+      let existingIDs = Set(songs.map(\.id))
+      let newSongs = batch.songs
+        .filter { $0.videoId.hasPrefix("dm:") }
+        .filter { !existingIDs.contains($0.id) }
+
+      songs.append(contentsOf: newSongs)
+      loadedPagePaths.insert(normalized)
+      self.nextPagePath = batch.nextPagePath
+      persistCache()
+      isLoadingMore = false
+    } catch {
+      if Task.isCancelled { return }
+      loadMoreErrorMessage = error.localizedDescription
+      isLoadingMore = false
+    }
+  }
+
+  private func load(force: Bool) async {
+    if force {
+      hasLoaded = false
+      nextPagePath = nil
+      loadedPagePaths = []
+      loadMoreErrorMessage = nil
+      lastVisibleSongID = nil
+      Self.cacheByPath.removeValue(forKey: cacheKey)
+    }
+
+    guard !isLoading else { return }
+    isLoading = true
+    if force || songs.isEmpty {
+      errorMessage = nil
+    }
+
+    do {
+      let normalizedPath = apiClient.canonicalDriveMusicPath(path)
+      let batch = try await apiClient.fetchDriveMusicSongsPageBatch(path: normalizedPath)
+      if Task.isCancelled { return }
+      songs = batch.songs.filter { $0.videoId.hasPrefix("dm:") }
+      nextPagePath = batch.nextPagePath
+      loadedPagePaths = [normalizedPath]
+      if let existingVisible = lastVisibleSongID, songs.contains(where: { $0.id == existingVisible }) {
+        lastVisibleSongID = existingVisible
+      } else {
+        lastVisibleSongID = songs.first?.id
+      }
+      loadMoreErrorMessage = nil
+      errorMessage = nil
+      hasLoaded = true
+      persistCache()
+      isLoading = false
+    } catch {
+      if Task.isCancelled { return }
+      if songs.isEmpty {
+        errorMessage = error.localizedDescription
+      }
+      isLoading = false
+    }
+  }
+
+  private func persistCache() {
+    Self.cacheByPath[cacheKey] = CachedState(
+      songs: songs,
+      nextPagePath: nextPagePath,
+      loadedPagePaths: loadedPagePaths,
+      lastVisibleSongID: lastVisibleSongID
+    )
+  }
+}
