@@ -82,12 +82,18 @@ struct MiniPlayerBar: View {
           .padding(.bottom, 10)
         }
       }
-      .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+      .background(.bar, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
       .overlay {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-          .strokeBorder(.white.opacity(0.12))
+          .strokeBorder(
+            LinearGradient(
+              colors: [.white.opacity(0.22), .white.opacity(0.05)],
+              startPoint: .top,
+              endPoint: .bottom
+            )
+          )
       }
-      .shadow(color: .black.opacity(0.14), radius: 14, y: 8)
+      .shadow(color: .black.opacity(0.06), radius: 10, y: 4)
       .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
   }

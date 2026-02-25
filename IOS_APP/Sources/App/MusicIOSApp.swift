@@ -12,6 +12,7 @@ struct MusicIOSApp: App {
         .environmentObject(player)
         .environmentObject(library)
         .environmentObject(radio)
+        .tint(.red)
     }
   }
 }

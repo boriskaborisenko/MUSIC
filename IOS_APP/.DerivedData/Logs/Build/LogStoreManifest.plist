@@ -6,7 +6,7 @@
 	<integer>12</integer>
 	<key>logs</key>
 	<dict>
-		<key>CD3BF383-F7D4-41D4-998D-8761DBA7DFC1</key>
+		<key>276FD00A-BFAC-4BA6-99C9-6A882755286C</key>
 		<dict>
 			<key>className</key>
 			<string>IDECommandLineBuildLog</string>
@@ -15,7 +15,7 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
 			<key>fileName</key>
-			<string>CD3BF383-F7D4-41D4-998D-8761DBA7DFC1.xcactivitylog</string>
+			<string>276FD00A-BFAC-4BA6-99C9-6A882755286C.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
@@ -40,15 +40,15 @@
 			<key>signature</key>
 			<string>Building project MusicIOS with scheme MusicIOS</string>
 			<key>timeStartedRecording</key>
-			<real>793715140.74076903</real>
+			<real>793716816.98848104</real>
 			<key>timeStoppedRecording</key>
-			<real>793715145.84090304</real>
+			<real>793716821.74000096</real>
 			<key>title</key>
 			<string>Building project MusicIOS with scheme MusicIOS</string>
 			<key>uniqueIdentifier</key>
-			<string>CD3BF383-F7D4-41D4-998D-8761DBA7DFC1</string>
+			<string>276FD00A-BFAC-4BA6-99C9-6A882755286C</string>
 		</dict>
-		<key>DD680B61-CEB7-4A9E-ABBC-A0318A66072F</key>
+		<key>29227643-8FAA-4335-9B6B-DF56B34F47AB</key>
 		<dict>
 			<key>className</key>
 			<string>IDECommandLineBuildLog</string>
@@ -57,7 +57,7 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
 			<key>fileName</key>
-			<string>DD680B61-CEB7-4A9E-ABBC-A0318A66072F.xcactivitylog</string>
+			<string>29227643-8FAA-4335-9B6B-DF56B34F47AB.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
@@ -82,13 +82,97 @@
 			<key>signature</key>
 			<string>Building project MusicIOS with scheme MusicIOS</string>
 			<key>timeStartedRecording</key>
-			<real>793715033.46293294</real>
+			<real>793717068.25485396</real>
 			<key>timeStoppedRecording</key>
-			<real>793715036.38476503</real>
+			<real>793717073.07458901</real>
 			<key>title</key>
 			<string>Building project MusicIOS with scheme MusicIOS</string>
 			<key>uniqueIdentifier</key>
-			<string>DD680B61-CEB7-4A9E-ABBC-A0318A66072F</string>
+			<string>29227643-8FAA-4335-9B6B-DF56B34F47AB</string>
+		</dict>
+		<key>67794DCB-AD1F-4B8E-A636-9FBAB151F152</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>67794DCB-AD1F-4B8E-A636-9FBAB151F152.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MusicIOS project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MusicIOS</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MusicIOS with scheme MusicIOS</string>
+			<key>timeStartedRecording</key>
+			<real>793716916.33191705</real>
+			<key>timeStoppedRecording</key>
+			<real>793716920.63975</real>
+			<key>title</key>
+			<string>Building project MusicIOS with scheme MusicIOS</string>
+			<key>uniqueIdentifier</key>
+			<string>67794DCB-AD1F-4B8E-A636-9FBAB151F152</string>
+		</dict>
+		<key>8039634A-47B4-4342-B7B6-D934E9BC5060</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>8039634A-47B4-4342-B7B6-D934E9BC5060.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>MusicIOS project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>MusicIOS</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project MusicIOS with scheme MusicIOS</string>
+			<key>timeStartedRecording</key>
+			<real>793716564.93125606</real>
+			<key>timeStoppedRecording</key>
+			<real>793716581.78748703</real>
+			<key>title</key>
+			<string>Building project MusicIOS with scheme MusicIOS</string>
+			<key>uniqueIdentifier</key>
+			<string>8039634A-47B4-4342-B7B6-D934E9BC5060</string>
 		</dict>
 	</dict>
 </dict>

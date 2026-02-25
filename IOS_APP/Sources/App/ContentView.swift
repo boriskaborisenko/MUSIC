@@ -9,10 +9,34 @@ struct ContentView: View {
   @State private var isKeyboardVisible = false
   @State private var showStartupSplash = true
   @State private var didStartStartupSplash = false
-  private let miniPlayerTabBarOffset: CGFloat = 60
+  private let floatingTabBarClearance: CGFloat = 84
+  private let systemTabBarOffset: CGFloat = 54
+
+  init() {
+    // iOS 26 has a system split search tab. Older versions use our custom floating bar.
+    #if os(iOS)
+    if #available(iOS 26, *) {
+      UITabBar.appearance().isHidden = false
+    } else {
+      UITabBar.appearance().isHidden = true
+    }
+    UITabBar.appearance().tintColor = .systemRed
+    #endif
+  }
+
+  private var usesSystemSplitTabBar: Bool {
+    if #available(iOS 26, *) {
+      return true
+    }
+    return false
+  }
 
   private var miniPlayerContentInset: CGFloat {
     player.isRadioPlayback ? 82 : 96
+  }
+
+  private var miniPlayerTabBarOffset: CGFloat {
+    usesSystemSplitTabBar ? systemTabBarOffset : (floatingTabBarClearance + 6)
   }
 
   private var shouldShowMiniPlayer: Bool {
@@ -24,41 +48,26 @@ struct ContentView: View {
   }
 
   var body: some View {
-    TabView(selection: $selectedTab) {
-      HomeView(selectedTab: $selectedTab)
-        .tabItem {
-          Label("Home", systemImage: "house.fill")
-        }
-        .tag(Tab.home)
-
-      SearchView()
-        .tabItem {
-          Label("Search", systemImage: "magnifyingglass")
-        }
-        .tag(Tab.search)
-
-      CollectionLibraryView()
-        .tabItem {
-          Label("Collection", systemImage: "heart.fill")
-        }
-        .tag(Tab.collection)
-
-      PlaylistsLibraryView()
-        .tabItem {
-          Label("Playlists", systemImage: "music.note.list")
-        }
-        .tag(Tab.playlists)
-
-      RadioView()
-        .tabItem {
-          Label("Radio", systemImage: "dot.radiowaves.left.and.right")
-        }
-        .tag(Tab.radio)
+    rootTabView
+    .safeAreaInset(edge: .bottom) {
+      if !usesSystemSplitTabBar {
+        Color.clear
+          .frame(height: floatingTabBarClearance)
+          .allowsHitTesting(false)
+      }
     }
     .safeAreaInset(edge: .bottom) {
       Color.clear
         .frame(height: shouldShowMiniPlayer ? miniPlayerContentInset : 0)
         .allowsHitTesting(false)
+    }
+    .overlay(alignment: .bottom) {
+      if !usesSystemSplitTabBar {
+        FloatingSplitTabBar(selectedTab: $selectedTab)
+          .padding(.horizontal, 12)
+          .padding(.bottom, 8)
+          .transition(.move(edge: .bottom).combined(with: .opacity))
+      }
     }
     .overlay(alignment: .bottom) {
       if shouldShowMiniPlayer {
@@ -80,6 +89,7 @@ struct ContentView: View {
     }
     .animation(.spring(response: 0.3, dampingFraction: 0.9), value: player.currentTrack?.videoId)
     .animation(.spring(response: 0.3, dampingFraction: 0.9), value: isKeyboardVisible)
+    .animation(.spring(response: 0.28, dampingFraction: 0.9), value: selectedTab)
     .onAppear {
       startStartupSplashIfNeeded()
     }
@@ -95,6 +105,70 @@ struct ContentView: View {
         .environmentObject(library)
         .presentationDetents([.fraction(0.94)])
         .presentationDragIndicator(.visible)
+    }
+  }
+
+  @ViewBuilder
+  private var rootTabView: some View {
+    if #available(iOS 26, *) {
+      TabView(selection: $selectedTab) {
+        SwiftUI.Tab("Home", systemImage: "house.fill", value: Tab.home) {
+          HomeView(selectedTab: $selectedTab)
+        }
+
+        SwiftUI.Tab("Collection", systemImage: "heart.fill", value: Tab.collection) {
+          CollectionLibraryView()
+        }
+
+        SwiftUI.Tab("Playlists", systemImage: "music.note.list", value: Tab.playlists) {
+          PlaylistsLibraryView()
+        }
+
+        SwiftUI.Tab("Radio", systemImage: "dot.radiowaves.left.and.right", value: Tab.radio) {
+          RadioView()
+        }
+
+        SwiftUI.Tab(value: Tab.search, role: .search) {
+          SearchView()
+        } label: {
+          Label("Search", systemImage: "magnifyingglass")
+        }
+      }
+      .tint(.red)
+    } else {
+      TabView(selection: $selectedTab) {
+        HomeView(selectedTab: $selectedTab)
+          .tabItem {
+            Label("Home", systemImage: "house.fill")
+          }
+          .tag(Tab.home)
+
+        SearchView()
+          .tabItem {
+            Label("Search", systemImage: "magnifyingglass")
+          }
+          .tag(Tab.search)
+
+        CollectionLibraryView()
+          .tabItem {
+            Label("Collection", systemImage: "heart.fill")
+          }
+          .tag(Tab.collection)
+
+        PlaylistsLibraryView()
+          .tabItem {
+            Label("Playlists", systemImage: "music.note.list")
+          }
+          .tag(Tab.playlists)
+
+        RadioView()
+          .tabItem {
+            Label("Radio", systemImage: "dot.radiowaves.left.and.right")
+          }
+          .tag(Tab.radio)
+      }
+      .toolbar(.hidden, for: .tabBar)
+      .toolbarBackground(.hidden, for: .tabBar)
     }
   }
 
@@ -120,6 +194,97 @@ private enum Tab {
   case radio
   case collection
   case playlists
+
+  var title: String {
+    switch self {
+    case .home: "Home"
+    case .search: "Search"
+    case .radio: "Radio"
+    case .collection: "Collection"
+    case .playlists: "Playlists"
+    }
+  }
+
+  var icon: String {
+    switch self {
+    case .home: "house.fill"
+    case .search: "magnifyingglass"
+    case .radio: "dot.radiowaves.left.and.right"
+    case .collection: "heart.fill"
+    case .playlists: "music.note.list"
+    }
+  }
+}
+
+private struct FloatingSplitTabBar: View {
+  @Binding var selectedTab: Tab
+
+  private let mainTabs: [Tab] = [.home, .collection, .playlists, .radio]
+  private let barHeight: CGFloat = 68
+  private let searchButtonSize: CGFloat = 68
+
+  var body: some View {
+    HStack(spacing: 10) {
+      HStack(spacing: 6) {
+        ForEach(mainTabs, id: \.self) { tab in
+          Button {
+            selectedTab = tab
+          } label: {
+            VStack(spacing: 4) {
+              Image(systemName: tab.icon)
+                .font(.system(size: 18, weight: .semibold))
+              Text(tab.title)
+                .font(.caption2.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+              .foregroundStyle(selectedTab == tab ? Color.red : .primary)
+            .background {
+              if selectedTab == tab {
+                Capsule(style: .continuous)
+                  .fill(Color.primary.opacity(0.09))
+              }
+            }
+            .contentShape(Capsule(style: .continuous))
+          }
+          .buttonStyle(.plain)
+        }
+      }
+      .padding(.horizontal, 8)
+      .padding(.vertical, 8)
+      .frame(height: barHeight)
+      .frame(maxWidth: .infinity)
+      .background(.ultraThinMaterial, in: Capsule(style: .continuous))
+      .overlay {
+        Capsule(style: .continuous)
+          .strokeBorder(.white.opacity(0.10))
+      }
+      .shadow(color: .black.opacity(0.14), radius: 16, y: 8)
+
+      Button {
+        selectedTab = .search
+      } label: {
+        Image(systemName: Tab.search.icon)
+          .font(.system(size: 22, weight: .semibold))
+          .foregroundStyle(selectedTab == .search ? Color.red : .primary)
+          .frame(width: searchButtonSize, height: searchButtonSize)
+          .background(
+            Circle()
+              .fill(selectedTab == .search ? Color.primary.opacity(0.09) : Color.clear)
+          )
+      }
+      .buttonStyle(.plain)
+      .background(.ultraThinMaterial, in: Circle())
+      .overlay {
+        Circle()
+          .strokeBorder(.white.opacity(0.10))
+      }
+      .shadow(color: .black.opacity(0.14), radius: 16, y: 8)
+      .accessibilityLabel("Search")
+    }
+  }
 }
 
 private struct StartupSplashOverlay: View {
@@ -238,15 +403,6 @@ private struct HomeView: View {
       .background(Color(.systemGroupedBackground))
       .navigationTitle("Home")
       .navigationBarTitleDisplayMode(.large)
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            selectedTab = .search
-          } label: {
-            Image(systemName: "magnifyingglass")
-          }
-        }
-      }
       .task {
         await viewModel.loadAllIfNeeded()
       }

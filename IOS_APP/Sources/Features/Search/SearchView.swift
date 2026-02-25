@@ -14,6 +14,11 @@ struct SearchView: View {
     decodeQuickSearches(from: quickSearchesStorage)
   }
 
+  private var searchListBottomClearance: CGFloat {
+    guard player.currentTrack != nil else { return 0 }
+    return player.isRadioPlayback ? 122 : 138
+  }
+
   var body: some View {
     NavigationStack {
       Group {
@@ -21,7 +26,8 @@ struct SearchView: View {
           SearchEmptyState(
             quickSearches: quickSearches,
             onTapQuickSearch: applyQuickSearch,
-            onDeleteQuickSearch: deleteQuickSearch
+            onDeleteQuickSearch: deleteQuickSearch,
+            bottomClearance: searchListBottomClearance
           )
         } else if viewModel.isLoading && viewModel.results.isEmpty {
           loadingState
@@ -86,6 +92,9 @@ struct SearchView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemGroupedBackground))
+    .safeAreaInset(edge: .bottom) {
+      Color.clear.frame(height: searchListBottomClearance)
+    }
   }
 
   private func errorState(message: String) -> some View {
@@ -102,6 +111,9 @@ struct SearchView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemGroupedBackground))
+    .safeAreaInset(edge: .bottom) {
+      Color.clear.frame(height: searchListBottomClearance)
+    }
   }
 
   private var resultsList: some View {
@@ -125,7 +137,7 @@ struct SearchView: View {
             } label: {
               Label("Playlist", systemImage: "text.badge.plus")
             }
-            .tint(.blue)
+            .tint(.red)
 
             Button {
               _ = library.toggleCollection(song)
@@ -182,6 +194,14 @@ struct SearchView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.vertical, 8)
           .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        }
+
+        if searchListBottomClearance > 0 {
+          Color.clear
+            .frame(height: searchListBottomClearance)
+            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
         }
       }
     }
@@ -276,6 +296,7 @@ private struct SearchEmptyState: View {
   let quickSearches: [String]
   let onTapQuickSearch: (String) -> Void
   let onDeleteQuickSearch: (String) -> Void
+  let bottomClearance: CGFloat
 
   var body: some View {
     ScrollView {
@@ -330,6 +351,9 @@ private struct SearchEmptyState: View {
     }
     .background(Color(.systemGroupedBackground))
     .scrollDismissesKeyboard(.immediately)
+    .safeAreaInset(edge: .bottom) {
+      Color.clear.frame(height: bottomClearance)
+    }
   }
 }
 
